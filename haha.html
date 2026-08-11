@@ -1,0 +1,1802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doodle Icecream — Happiness, One Scoop at a Time</title>
+<meta name="description" content="Doodle Icecream — colorful scoops, crazy flavors, and a whole lot of fun. A little doodle of happiness in every cup.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%A6%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================
+     DOODLE ICECREAM — Design tokens
+  ============================================ */
+  :root{
+    /* brand palette (from brief) */
+    --cream:      #FFF4D6;
+    --cream-2:    #FCE9AF;
+    --cream-3:    #FFFBEF;
+    --pink:       #FF6F91;
+    --pink-2:     #E8557A;
+    --pink-soft:  #FFD3DE;
+    --yellow:     #FFD447;
+    --yellow-2:   #F2B900;
+    --mint:       #8FE3CF;
+    --mint-2:     #55C5AC;
+    --brown:      #5A3825;
+    --brown-2:    #442A1B;
+    --brown-soft: #8A5C3E;
+    --sky:        #75CFF0;
+    --sky-2:      #45B4DE;
+    --purple:     #6846A5;
+    --purple-2:   #4E3480;
+    --white:      #FFFDF7;
+
+    /* roles */
+    --ink: var(--brown);
+    --bg: var(--cream);
+    --paper: var(--white);
+
+    --font-display: 'Baloo 2', ui-rounded, 'Segoe UI', sans-serif;
+    --font-body: 'Quicksand', ui-rounded, 'Segoe UI', sans-serif;
+    --font-hand: 'Caveat', cursive;
+
+    --container: 1280px;
+    --radius-lg: 34px;
+    --radius-md: 22px;
+    --radius-sm: 14px;
+
+    --stroke: 3px;
+    --stroke-thick: 4px;
+
+    --shadow-1: 5px 5px 0 var(--ink);
+    --shadow-2: 8px 8px 0 var(--ink);
+    --shadow-soft: 0 14px 34px rgba(90,56,37,0.16);
+
+    --ease-bounce: cubic-bezier(.34,1.56,.64,1);
+    --ease-out: cubic-bezier(.16,1,.3,1);
+  }
+
+  /* ============================================
+     Reset
+  ============================================ */
+  *,*::before,*::after{ box-sizing:border-box; }
+  html{
+    scroll-behavior:smooth;
+    -webkit-text-size-adjust:100%;
+  }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    font-weight:600;
+    line-height:1.5;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  img,svg{ display:block; max-width:100%; }
+  a{ color:inherit; text-decoration:none; }
+  button{ font:inherit; color:inherit; background:none; border:none; cursor:pointer; }
+  ul{ list-style:none; margin:0; padding:0; }
+  h1,h2,h3,h4,p,figure{ margin:0; }
+  input{ font:inherit; }
+
+  h1,h2,h3,h4{
+    font-family:var(--font-display);
+    font-weight:800;
+    line-height:1.05;
+    letter-spacing:0.2px;
+  }
+
+  .container{
+    width:100%;
+    max-width:var(--container);
+    margin-inline:auto;
+    padding-inline:clamp(20px, 5vw, 56px);
+  }
+
+  section{ position:relative; }
+  main, section, footer{ scroll-margin-top:88px; }
+
+  /* visually-hidden but focusable skip link */
+  .skip-link{
+    position:absolute;
+    left:12px; top:-60px;
+    background:var(--brown);
+    color:var(--cream);
+    padding:12px 20px;
+    border-radius:100px;
+    font-family:var(--font-display);
+    font-weight:700;
+    z-index:999;
+    transition:top .2s var(--ease-out);
+  }
+  .skip-link:focus{ top:12px; }
+
+  /* keyboard focus visibility everywhere */
+  a:focus-visible,
+  button:focus-visible,
+  [tabindex]:focus-visible{
+    outline:3px dashed var(--purple);
+    outline-offset:4px;
+    border-radius:8px;
+  }
+
+  ::selection{ background:var(--pink); color:var(--white); }
+
+  /* ============================================
+     Grain overlay (subtle paper texture, full page)
+  ============================================ */
+  .grain{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    z-index:500;
+    mix-blend-mode:multiply;
+    opacity:0.05;
+  }
+
+  /* ============================================
+     Type helpers
+  ============================================ */
+  .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-family:var(--font-hand);
+    font-weight:700;
+    font-size:clamp(1.15rem, 1.4vw, 1.4rem);
+    color:var(--pink-2);
+    transform:rotate(-2deg);
+  }
+  .headline{
+    font-size:clamp(2.4rem, 5.6vw, 4.6rem);
+    font-family:var(--font-display);
+    font-weight:800;
+  }
+  .section-title{
+    font-size:clamp(2rem, 4vw, 3.1rem);
+    max-width:16ch;
+  }
+  .lede{
+    font-size:clamp(1.05rem, 1.4vw, 1.25rem);
+    font-weight:600;
+    color:var(--brown-soft);
+    max-width:46ch;
+  }
+
+  .squiggle-underline{
+    position:relative;
+    display:inline-block;
+    white-space:nowrap;
+  }
+  .squiggle-underline svg{
+    position:absolute;
+    left:0; bottom:-0.14em;
+    width:100%;
+    height:0.3em;
+  }
+
+  /* ============================================
+     Buttons
+  ============================================ */
+  .btn{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:1.02rem;
+    padding:16px 30px;
+    border-radius:100px;
+    border:var(--stroke) solid var(--ink);
+    box-shadow:var(--shadow-1);
+    background:var(--yellow);
+    color:var(--ink);
+    transition:transform .18s var(--ease-bounce), box-shadow .18s var(--ease-bounce), background .18s ease;
+    white-space:nowrap;
+  }
+  .btn:hover{
+    transform:translate(-3px,-3px) rotate(-1deg);
+    box-shadow:var(--shadow-2);
+  }
+  .btn:active{
+    transform:translate(0,0);
+    box-shadow:2px 2px 0 var(--ink);
+  }
+  .btn--pink{ background:var(--pink); color:var(--white); }
+  .btn--outline{ background:var(--paper); }
+  .btn--sm{ padding:11px 22px; font-size:0.92rem; }
+  .btn svg{ width:1.2em; height:1.2em; }
+
+  /* sticker-style content block reused across sections */
+  .sticker{
+    background:var(--paper);
+    border:var(--stroke) solid var(--ink);
+    border-radius:var(--radius-md);
+    box-shadow:var(--shadow-1);
+  }
+
+  .tag-sticker{
+    position:absolute;
+    font-family:var(--font-hand);
+    font-weight:700;
+    font-size:1.3rem;
+    padding:6px 16px 8px;
+    border-radius:100px;
+    border:2.5px solid var(--ink);
+    box-shadow:3px 3px 0 var(--ink);
+    background:var(--yellow);
+    color:var(--ink);
+    transform:rotate(-8deg);
+  }
+
+  /* doodle icon defaults (pen/marker line doodles) */
+  .doodle{ color:var(--ink); }
+  .doodle--line{ fill:none; stroke:currentColor; stroke-width:5; stroke-linecap:round; stroke-linejoin:round; }
+
+  /* generic scroll reveal */
+  .reveal{
+    opacity:0;
+    transform:translateY(28px);
+    transition:opacity .7s var(--ease-out), transform .7s var(--ease-out);
+  }
+  .reveal.in-view{ opacity:1; transform:translateY(0); }
+  .reveal-delay-1.in-view{ transition-delay:.08s; }
+  .reveal-delay-2.in-view{ transition-delay:.16s; }
+  .reveal-delay-3.in-view{ transition-delay:.24s; }
+  .reveal-delay-4.in-view{ transition-delay:.32s; }
+
+  /* floating doodle keyframes (ambient hero motion) */
+  @keyframes floatA{
+    0%,100%{ transform:translate(0,0) rotate(var(--r,0deg)); }
+    50%{ transform:translate(6px,-14px) rotate(calc(var(--r,0deg) + 6deg)); }
+  }
+  @keyframes floatB{
+    0%,100%{ transform:translate(0,0) rotate(var(--r,0deg)); }
+    50%{ transform:translate(-10px,10px) rotate(calc(var(--r,0deg) - 5deg)); }
+  }
+  @keyframes bob{
+    0%,100%{ transform:translateY(0); }
+    50%{ transform:translateY(-10px); }
+  }
+  @keyframes spinSlow{
+    to{ transform:rotate(360deg); }
+  }
+  @keyframes popIn{
+    0%{ transform:scale(0) rotate(-14deg); opacity:0; }
+    70%{ transform:scale(1.12) rotate(3deg); opacity:1; }
+    100%{ transform:scale(1) rotate(-6deg); opacity:1; }
+  }
+  @keyframes wiggle{
+    0%,100%{ transform:rotate(-2deg); }
+    50%{ transform:rotate(2deg); }
+  }
+  @keyframes marquee-scroll{
+    from{ transform:translateX(0); }
+    to{ transform:translateX(-50%); }
+  }
+  @keyframes sprinkleFall{
+    0%{ transform:translate(0,0) rotate(0deg); opacity:1; }
+    100%{ transform:translate(var(--dx), var(--dy)) rotate(var(--dr)); opacity:0; }
+  }
+  /* ============================================
+     Navbar
+  ============================================ */
+  .nav{
+    position:sticky;
+    top:0;
+    z-index:200;
+    background:rgba(255,244,214,0.88);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    border-bottom:var(--stroke) solid var(--ink);
+  }
+  .nav__row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    padding-block:14px;
+  }
+  .logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-family:var(--font-display);
+    font-weight:800;
+    font-size:1.5rem;
+    color:var(--ink);
+    flex-shrink:0;
+  }
+  .logo__word{ position:relative; }
+  .logo__word .squiggle-underline svg{ color:var(--yellow-2); bottom:-0.22em; }
+
+  .nav__links{
+    display:flex;
+    align-items:center;
+    gap:clamp(18px,2.4vw,38px);
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:1.02rem;
+  }
+  .nav__links a{
+    position:relative;
+    padding-block:4px;
+  }
+  .nav__links a::after{
+    content:"";
+    position:absolute;
+    left:-2px; right:-2px; bottom:-3px;
+    height:8px;
+    background:var(--mint);
+    border-radius:6px;
+    transform:scaleX(0);
+    transform-origin:left;
+    transition:transform .25s var(--ease-out);
+    z-index:-1;
+  }
+  .nav__links a:hover::after,
+  .nav__links a:focus-visible::after{ transform:scaleX(1); }
+
+  .nav__actions{ display:flex; align-items:center; gap:14px; }
+
+  .hamburger{
+    display:none;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    gap:6px;
+    width:48px; height:48px;
+    border:var(--stroke) solid var(--ink);
+    border-radius:14px;
+    background:var(--paper);
+    box-shadow:3px 3px 0 var(--ink);
+    flex-shrink:0;
+  }
+  .hamburger span{
+    display:block;
+    width:22px; height:3px;
+    background:var(--ink);
+    border-radius:4px;
+    transition:transform .3s var(--ease-bounce), opacity .2s ease;
+  }
+  .hamburger[aria-expanded="true"] span:nth-child(1){ transform:translateY(9px) rotate(45deg); }
+  .hamburger[aria-expanded="true"] span:nth-child(2){ opacity:0; }
+  .hamburger[aria-expanded="true"] span:nth-child(3){ transform:translateY(-9px) rotate(-45deg); }
+
+  .mobile-menu{
+    position:fixed;
+    inset:0;
+    z-index:300;
+    background:var(--cream);
+    display:flex;
+    flex-direction:column;
+    padding:22px clamp(20px,6vw,56px) 40px;
+    transform:translateY(-100%);
+    transition:transform .35s var(--ease-out);
+    visibility:hidden;
+  }
+  .mobile-menu.is-open{ transform:translateY(0); visibility:visible; }
+  .mobile-menu__top{ display:flex; align-items:center; justify-content:space-between; }
+  .mobile-menu__links{
+    margin-top:clamp(30px,8vh,60px);
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    font-family:var(--font-display);
+    font-size:clamp(1.8rem,7vw,2.6rem);
+    font-weight:800;
+  }
+  .mobile-menu__links a{
+    display:inline-flex;
+    align-items:center;
+    gap:12px;
+    padding-block:10px;
+    width:fit-content;
+  }
+  .mobile-menu__links a svg{ width:0.7em; height:0.7em; color:var(--pink); flex-shrink:0; }
+  .mobile-menu__cta{ margin-top:auto; padding-top:30px; }
+
+  /* ============================================
+     Hero
+  ============================================ */
+  .hero{
+    padding-block:clamp(40px,8vh,90px) clamp(60px,10vh,110px);
+    overflow:clip;
+  }
+  .hero__grid{
+    display:grid;
+    grid-template-columns:1.05fr 0.95fr;
+    align-items:center;
+    gap:clamp(20px,4vw,40px);
+  }
+  .hero__blob-bg{
+    position:absolute;
+    z-index:-1;
+  }
+  .hero__eyebrow{ margin-bottom:16px; }
+  .hero__title{ position:relative; }
+  .hero__title .squiggle-underline svg{ color:var(--pink); }
+  .hero__lede{ margin-top:22px; }
+  .hero__ctas{
+    margin-top:32px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:16px;
+  }
+  .hero__stats{
+    margin-top:38px;
+    display:flex;
+    gap:clamp(20px,3vw,40px);
+    flex-wrap:wrap;
+  }
+  .hero__stat b{
+    display:block;
+    font-family:var(--font-display);
+    font-size:1.7rem;
+    color:var(--pink-2);
+  }
+  .hero__stat span{
+    font-family:var(--font-hand);
+    font-size:1.15rem;
+    font-weight:700;
+    color:var(--brown-soft);
+  }
+
+  .hero__art{
+    position:relative;
+    aspect-ratio:1/1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .hero__art-canvas{
+    position:absolute;
+    inset:0;
+    z-index:5;
+    pointer-events:none;
+    width:100%;
+    height:100%;
+  }
+  .hero__cone-wrap{
+    position:relative;
+    width:min(78%, 380px);
+    animation:bob 6s ease-in-out infinite;
+  }
+  .hero__cone-wrap svg{ overflow:visible; }
+  .hero__cone-shadow{
+    position:absolute;
+    bottom:-6%;
+    left:50%;
+    translate:-50% 0;
+    width:62%;
+    height:22px;
+    background:radial-gradient(closest-side, rgba(90,56,37,0.28), transparent 75%);
+    border-radius:50%;
+    z-index:-1;
+  }
+  .hero__float{
+    position:absolute;
+    color:var(--ink);
+  }
+  .hero__float--a{ animation:floatA 5.5s ease-in-out infinite; }
+  .hero__float--b{ animation:floatB 6.5s ease-in-out infinite; }
+  .hero__float--spin{ animation:spinSlow 14s linear infinite; }
+  /* ============================================
+     Section heading pattern (shared)
+  ============================================ */
+  .section-head{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:14px;
+    margin-bottom:clamp(34px,6vh,64px);
+  }
+  .section-head--center{ align-items:center; text-align:center; margin-inline:auto; }
+
+  /* ============================================
+     Flavours
+  ============================================ */
+  .flavours{ padding-block:clamp(60px,10vh,120px); }
+  .flavours__grid{
+    display:grid;
+    grid-template-columns:repeat(12,1fr);
+    gap:26px;
+  }
+  .flavour-card{
+    position:relative;
+    grid-column:span 12;
+    padding:30px 28px 34px;
+    border:var(--stroke-thick) solid var(--ink);
+    border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-2);
+    transition:transform .3s var(--ease-bounce), box-shadow .3s var(--ease-bounce);
+    display:flex;
+    flex-direction:column;
+    min-height:100%;
+  }
+  .flavour-card:nth-child(1){ grid-column:span 7; background:var(--pink-soft); --rot:-1.6deg; }
+  .flavour-card:nth-child(2){ grid-column:span 5; background:var(--brown); color:var(--cream); --rot:1.4deg; }
+  .flavour-card:nth-child(2) .flavour-card__desc{ color:var(--cream-2); }
+  .flavour-card:nth-child(2) .tag-sticker{ border-color:var(--ink); }
+  .flavour-card:nth-child(3){ grid-column:span 4; background:var(--yellow); --rot:-1.2deg; }
+  .flavour-card:nth-child(4){ grid-column:span 4; background:var(--sky); --rot:1.8deg; }
+  .flavour-card:nth-child(5){ grid-column:span 4; background:var(--mint); --rot:-1.4deg; }
+  .flavour-card{ transform:rotate(var(--rot)); }
+  .flavour-card:hover{
+    transform:rotate(0deg) translateY(-8px);
+    box-shadow:11px 11px 0 var(--ink);
+    z-index:2;
+  }
+  .flavour-card__icon{
+    width:clamp(84px,9vw,120px);
+    height:clamp(84px,9vw,120px);
+    margin-bottom:18px;
+  }
+  .flavour-card:nth-child(1) .flavour-card__icon{ width:clamp(110px,12vw,160px); height:clamp(110px,12vw,160px); }
+  .flavour-card__name{
+    font-size:clamp(1.5rem,2vw,2rem);
+    margin-bottom:8px;
+  }
+  .flavour-card__desc{
+    font-weight:600;
+    color:var(--brown-2);
+    max-width:38ch;
+  }
+  .flavour-card__sticker{
+    position:absolute;
+    top:-14px;
+    right:22px;
+    animation:wiggle 3.4s ease-in-out infinite;
+  }
+  .flavour-card__doodle{
+    position:absolute;
+    opacity:0.55;
+  }
+
+  /* ============================================
+     Mood picker
+  ============================================ */
+  .mood{
+    padding-block:clamp(60px,10vh,120px);
+    background:var(--brown);
+    color:var(--cream);
+    overflow:clip;
+  }
+  .mood .section-head{ color:var(--cream); }
+  .mood .lede{ color:var(--cream-2); }
+  .mood .eyebrow{ color:var(--yellow); }
+  .mood__grid{
+    display:flex;
+    flex-wrap:wrap;
+    gap:16px;
+    margin-bottom:8px;
+  }
+  .mood-btn{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:16px 26px;
+    border-radius:100px;
+    border:var(--stroke) solid var(--cream);
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:1.15rem;
+    color:var(--cream);
+    transition:transform .2s var(--ease-bounce), background .2s ease, color .2s ease;
+  }
+  .mood-btn__emoji{ font-size:1.5rem; line-height:1; }
+  .mood-btn:hover{ transform:translateY(-4px) rotate(-2deg); }
+  .mood-btn[aria-pressed="true"]{
+    background:var(--yellow);
+    color:var(--brown);
+    border-color:var(--yellow);
+    transform:translateY(-4px) rotate(2deg);
+  }
+
+  .mood__result{
+    margin-top:40px;
+    display:none;
+    align-items:center;
+    gap:26px;
+    background:var(--cream);
+    color:var(--ink);
+    border:var(--stroke-thick) solid var(--ink);
+    border-radius:var(--radius-lg);
+    padding:28px clamp(20px,4vw,40px);
+    box-shadow:8px 8px 0 var(--yellow);
+  }
+  .mood__result.is-visible{
+    display:flex;
+    animation:popIn .5s var(--ease-bounce) both;
+  }
+  .mood__result-icon{ width:88px; height:88px; flex-shrink:0; }
+  .mood__result-label{
+    font-family:var(--font-hand);
+    font-size:1.3rem;
+    font-weight:700;
+    color:var(--pink-2);
+    display:block;
+  }
+  .mood__result-name{ font-size:clamp(1.5rem,2.4vw,2.1rem); }
+  .mood__result-desc{ margin-top:4px; font-weight:600; color:var(--brown-soft); }
+  /* ============================================
+     Brand story (scrapbook)
+  ============================================ */
+  .story{ padding-block:clamp(60px,10vh,120px); }
+  .story__layout{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:clamp(30px,5vw,70px);
+    align-items:center;
+  }
+  .story__copy p{
+    font-weight:600;
+    color:var(--brown-2);
+    margin-top:16px;
+    max-width:50ch;
+  }
+  .story__chapters{
+    margin-top:28px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .story__chapter{
+    display:flex;
+    gap:14px;
+    align-items:flex-start;
+  }
+  .story__chapter-tag{
+    font-family:var(--font-hand);
+    font-weight:700;
+    font-size:1.1rem;
+    background:var(--mint);
+    border:2px solid var(--ink);
+    border-radius:100px;
+    padding:3px 14px 5px;
+    flex-shrink:0;
+    white-space:nowrap;
+    transform:rotate(-3deg);
+    margin-top:2px;
+  }
+  .story__chapter p{ margin:0; font-weight:600; }
+
+  .scrapbook{
+    position:relative;
+    aspect-ratio:1/1;
+  }
+  .polaroid{
+    position:absolute;
+    background:var(--white);
+    border:var(--stroke) solid var(--ink);
+    border-radius:10px;
+    box-shadow:var(--shadow-1);
+    padding:12px 12px 40px;
+    width:52%;
+  }
+  .polaroid img,.polaroid .polaroid__art{
+    width:100%;
+    aspect-ratio:1/1;
+    border-radius:4px;
+    display:block;
+  }
+  .polaroid figcaption{
+    position:absolute;
+    left:14px; bottom:8px;
+    font-family:var(--font-hand);
+    font-weight:700;
+    font-size:1.15rem;
+    color:var(--pink-2);
+  }
+  .polaroid--1{ top:0; left:4%; transform:rotate(-7deg); z-index:2; }
+  .polaroid--2{ top:8%; right:0; width:44%; transform:rotate(6deg); z-index:1; }
+  .polaroid--3{ bottom:0; left:22%; width:46%; transform:rotate(4deg); z-index:3; }
+  .scrapbook__arrow{
+    position:absolute;
+    color:var(--purple);
+  }
+  .scrapbook__sticker{
+    position:absolute;
+    z-index:4;
+  }
+
+  /* ============================================
+     Signature product — editorial
+  ============================================ */
+  .signature{
+    padding-block:clamp(70px,12vh,140px);
+    background:var(--sky);
+    overflow:clip;
+    position:relative;
+  }
+  .signature__grid{
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    align-items:center;
+    gap:20px;
+  }
+  .signature__eyebrow{ color:var(--purple-2); }
+  .signature__title{
+    font-size:clamp(3rem,8vw,6.4rem);
+    line-height:0.92;
+  }
+  .signature__title span{ display:block; }
+  .signature__tagline{
+    margin-top:18px;
+    font-family:var(--font-hand);
+    font-size:clamp(1.3rem,2vw,1.7rem);
+    font-weight:700;
+    color:var(--brown-2);
+  }
+  .signature__cta{ margin-top:30px; }
+  .signature__art{
+    position:relative;
+    display:flex;
+    justify-content:center;
+  }
+  .signature__art svg{ width:min(100%,420px); animation:bob 7s ease-in-out infinite; }
+  /* ============================================
+     Marquee
+  ============================================ */
+  .marquee{
+    background:var(--brown);
+    border-block:var(--stroke-thick) solid var(--ink);
+    padding-block:22px;
+    overflow:hidden;
+  }
+  .marquee__track{
+    display:flex;
+    width:max-content;
+    animation:marquee-scroll 26s linear infinite;
+  }
+  .marquee__set{
+    display:flex;
+    align-items:center;
+    flex-shrink:0;
+  }
+  .marquee__item{
+    display:flex;
+    align-items:center;
+    gap:22px;
+    font-family:var(--font-display);
+    font-weight:800;
+    font-size:clamp(1.6rem,4vw,2.8rem);
+    color:var(--cream);
+    padding-inline:22px;
+    white-space:nowrap;
+  }
+  .marquee__item svg{ width:0.7em; height:0.7em; color:var(--yellow); flex-shrink:0; }
+
+  /* ============================================
+     Social grid
+  ============================================ */
+  .social{ padding-block:clamp(60px,10vh,120px); }
+  .social__grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    grid-auto-rows:clamp(120px,14vw,190px);
+    gap:16px;
+  }
+  .social-tile{
+    position:relative;
+    border:var(--stroke) solid var(--ink);
+    border-radius:var(--radius-sm);
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:transform .25s var(--ease-bounce);
+  }
+  .social-tile:hover{ transform:scale(1.04) rotate(-1deg); z-index:2; }
+  .social-tile:nth-child(1){ grid-column:span 2; grid-row:span 2; background:var(--pink); }
+  .social-tile:nth-child(2){ background:var(--mint); }
+  .social-tile:nth-child(3){ background:var(--yellow); }
+  .social-tile:nth-child(4){ background:var(--sky); }
+  .social-tile:nth-child(5){ background:var(--cream-2); }
+  .social-tile:nth-child(6){ grid-column:span 2; background:var(--purple); }
+  .social-tile:nth-child(7){ background:var(--mint-2); }
+  .social-tile:nth-child(8){ background:var(--pink-soft); }
+  .social-tile__icon{ width:44%; height:44%; opacity:0.85; }
+  .social-tile__heart{
+    position:absolute;
+    bottom:10px; right:10px;
+    width:26px; height:26px;
+    color:var(--white);
+    opacity:0;
+    transform:scale(0.6);
+    transition:opacity .2s ease, transform .2s var(--ease-bounce);
+  }
+  .social-tile:hover .social-tile__heart{ opacity:1; transform:scale(1); }
+  .social__footer{
+    margin-top:30px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:16px;
+  }
+
+  /* ============================================
+     Footer
+  ============================================ */
+  .footer{
+    background:var(--purple);
+    color:var(--cream);
+    padding-top:clamp(60px,9vh,100px);
+    overflow:clip;
+    position:relative;
+  }
+  .footer__top{
+    display:grid;
+    grid-template-columns:1.3fr 0.7fr 0.7fr 0.7fr;
+    gap:30px;
+    padding-bottom:50px;
+    border-bottom:2px solid rgba(255,244,214,0.25);
+  }
+  .footer__brand .logo{ color:var(--cream); }
+  .footer__tagline{
+    margin-top:14px;
+    font-family:var(--font-hand);
+    font-size:1.35rem;
+    font-weight:700;
+    color:var(--yellow);
+    max-width:22ch;
+  }
+  .footer__social{ display:flex; gap:12px; margin-top:20px; }
+  .footer__social a{
+    width:42px; height:42px;
+    display:flex; align-items:center; justify-content:center;
+    border:2px solid var(--cream);
+    border-radius:100px;
+    transition:transform .2s var(--ease-bounce), background .2s ease;
+  }
+  .footer__social a:hover{ background:var(--pink); border-color:var(--pink); transform:translateY(-3px) rotate(-6deg); }
+  .footer__social svg{ width:20px; height:20px; }
+
+  .footer__col h4{
+    font-family:var(--font-display);
+    font-size:1.05rem;
+    color:var(--yellow);
+    margin-bottom:16px;
+  }
+  .footer__col ul{ display:flex; flex-direction:column; gap:10px; font-weight:600; }
+  .footer__col a:hover{ text-decoration:underline; text-underline-offset:4px; }
+
+  .footer__bottom{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+    padding-block:22px;
+    font-size:0.9rem;
+    font-weight:600;
+    color:var(--cream-2);
+  }
+  .footer__bigart{
+    display:flex;
+    justify-content:center;
+    margin-top:10px;
+  }
+  .footer__bigart svg{ width:min(100%, 340px); }
+  /* ============================================
+     Utilities
+  ============================================ */
+  .visually-hidden{
+    position:absolute !important;
+    width:1px; height:1px;
+    padding:0; margin:-1px;
+    overflow:hidden;
+    clip:rect(0,0,0,0);
+    white-space:nowrap;
+    border:0;
+  }
+  .wobbly{ filter:url(#wobble); }
+  .confetti-piece{
+    position:fixed;
+    top:0; left:0;
+    width:10px; height:10px;
+    border-radius:3px;
+    pointer-events:none;
+    z-index:900;
+    animation:sprinkleFall .9s ease-out forwards;
+  }
+
+  /* ============================================
+     Responsive
+  ============================================ */
+  @media (max-width:980px){
+    .hero__grid{ grid-template-columns:1fr; }
+    .hero__art{ order:-1; max-width:420px; margin-inline:auto; }
+    .hero__stats{ justify-content:flex-start; }
+
+    .story__layout{ grid-template-columns:1fr; }
+    .scrapbook{ max-width:440px; margin-inline:auto; width:100%; }
+
+    .signature__grid{ grid-template-columns:1fr; text-align:center; }
+    .signature__art{ order:-1; }
+    .signature__title{ font-size:clamp(2.6rem,10vw,4.2rem); }
+
+    .footer__top{ grid-template-columns:1fr 1fr; row-gap:36px; }
+    .footer__brand{ grid-column:1 / -1; }
+  }
+
+  @media (max-width:860px){
+    .nav__links{ display:none; }
+    .nav__order-btn{ display:none; }
+    .hamburger{ display:flex; }
+  }
+
+  @media (max-width:720px){
+    .flavours__grid{ grid-template-columns:1fr; }
+    .flavour-card,
+    .flavour-card:nth-child(1),
+    .flavour-card:nth-child(2),
+    .flavour-card:nth-child(3),
+    .flavour-card:nth-child(4),
+    .flavour-card:nth-child(5){ grid-column:1 / -1; }
+
+    .social__grid{ grid-template-columns:repeat(2,1fr); }
+    .social-tile:nth-child(1){ grid-column:span 2; grid-row:span 1; aspect-ratio:2/1; }
+    .social-tile:nth-child(6){ grid-column:span 1; }
+
+    .mood__result{ flex-direction:column; text-align:center; }
+  }
+
+  @media (max-width:560px){
+    .hero__ctas .btn{ width:100%; }
+    .hero__ctas{ flex-direction:column; }
+    .story__chapter{ align-items:center; }
+  }
+
+  /* ============================================
+     Reduced motion
+  ============================================ */
+  @media (prefers-reduced-motion:reduce){
+    html{ scroll-behavior:auto; }
+    *,*::before,*::after{
+      animation-duration:0.01ms !important;
+      animation-iteration-count:1 !important;
+      transition-duration:0.01ms !important;
+      scroll-behavior:auto !important;
+    }
+    .reveal{ opacity:1; transform:none; }
+  }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<!-- ============================================
+     Reusable SVG doodle sprite + filters
+============================================ -->
+<svg aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+  <defs>
+    <filter id="wobble" x="-30%" y="-30%" width="160%" height="160%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.05" numOctaves="2" seed="7" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="8" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="grainFilter" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch" result="noise"/>
+      <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.9 0"/>
+    </filter>
+
+    <symbol id="icon-star" viewBox="0 0 24 24">
+      <path class="doodle--line" d="M12,2 L14.3,8.6 L21,9.1 L15.8,13.4 L17.5,20 L12,16.3 L6.5,20 L8.2,13.4 L3,9.1 L9.7,8.6 Z"/>
+    </symbol>
+
+    <symbol id="icon-heart" viewBox="0 0 24 24">
+      <path class="doodle--line" d="M12,20.2 C6.2,15.3 2,11.6 2,7.7 C2,4.7 4.4,2.8 6.9,2.8 C9.1,2.8 10.7,4.2 12,6.1 C13.3,4.2 14.9,2.8 17.1,2.8 C19.6,2.8 22,4.7 22,7.7 C22,11.6 17.8,15.3 12,20.2 Z"/>
+    </symbol>
+
+    <symbol id="icon-swirl" viewBox="0 0 24 24">
+      <path class="doodle--line" d="M12,13.3 C12,10.6 9.6,9 7.6,10.1 C5.5,11.3 5.6,14.5 8,15.5 C11,16.8 14.4,14.4 13.5,11.3 C12.9,9.1 10.1,7.9 7.7,8.9"/>
+    </symbol>
+
+    <symbol id="icon-sprinkles" viewBox="0 0 24 24">
+      <g class="doodle--line">
+        <path d="M5,6 L7.2,10.4"/>
+        <path d="M11.4,3.6 L12.3,9.2"/>
+        <path d="M17.4,6.6 L19,12"/>
+        <path d="M7.6,14.8 L6,20.4"/>
+        <path d="M15.6,13.8 L17.2,19.4"/>
+      </g>
+    </symbol>
+
+    <symbol id="icon-cherry" viewBox="0 0 24 24">
+      <g class="doodle--line">
+        <path d="M12.5,3 C10.6,6.6 9.2,9.6 8.6,12.6"/>
+        <path d="M12.5,3 C13.9,6.4 15.6,9.2 16.3,13"/>
+        <circle cx="7.6" cy="16.3" r="3.8"/>
+        <circle cx="16.6" cy="17.3" r="3.2"/>
+      </g>
+    </symbol>
+
+    <symbol id="icon-wave" viewBox="0 0 24 24">
+      <path class="doodle--line" d="M1.5,13 C3.6,8.6 5.8,8.6 8,13 C10.2,17.4 12.4,17.4 14.6,13 C16.8,8.6 19,8.6 21.2,13 C21.8,14.2 22.2,14.7 22.5,15"/>
+    </symbol>
+
+    <symbol id="icon-smiley" viewBox="0 0 24 24">
+      <g class="doodle--line">
+        <circle cx="12" cy="12" r="9.2"/>
+        <path d="M7.6,14.2 C9,17.4 15,17.4 16.4,14.2" fill="none"/>
+      </g>
+      <circle cx="8.6" cy="10.3" r="1.15" fill="currentColor" stroke="none"/>
+      <circle cx="15.4" cy="10.3" r="1.15" fill="currentColor" stroke="none"/>
+    </symbol>
+
+    <symbol id="icon-pin" viewBox="0 0 24 24">
+      <path class="doodle--line" d="M12,2.6 C7.8,2.6 4.6,5.8 4.6,9.8 C4.6,15 12,21.4 12,21.4 C12,21.4 19.4,15 19.4,9.8 C19.4,5.8 16.2,2.6 12,2.6 Z"/>
+      <circle class="doodle--line" cx="12" cy="9.7" r="2.6"/>
+    </symbol>
+
+    <symbol id="icon-clock" viewBox="0 0 24 24">
+      <circle class="doodle--line" cx="12" cy="12.5" r="9"/>
+      <path class="doodle--line" d="M12,7.4 L12,12.8 L16,15"/>
+    </symbol>
+
+    <symbol id="icon-arrow-link" viewBox="0 0 24 24">
+      <path class="doodle--line" d="M4,12 L19.2,12 M13.6,6 L19.6,12 L13.6,18"/>
+    </symbol>
+
+    <symbol id="icon-underline-squiggle" viewBox="0 0 200 20" preserveAspectRatio="none">
+      <path d="M2,14 C20,4 34,20 52,10 C70,1 84,18 102,9 C120,1 134,17 152,8 C166,2 178,14 198,7" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+    </symbol>
+
+    <symbol id="icon-cone-mark" viewBox="0 0 40 40">
+      <path d="M11.5,19.5 L28.5,19.5 L21,37 C20.4,38.1 19.6,38.1 19,37 Z" fill="#FFD447" stroke="#5A3825" stroke-width="2.4" stroke-linejoin="round"/>
+      <path d="M12.5,19.5 L27.5,19.5 M14,24 L26,24 M15,28.5 L25,28.5" stroke="#5A3825" stroke-width="1.1" opacity="0.55"/>
+      <circle cx="20" cy="13.5" r="11" fill="#FF6F91" stroke="#5A3825" stroke-width="2.4"/>
+      <ellipse cx="15.2" cy="8.4" rx="3.1" ry="1.9" fill="#FFFDF7" opacity="0.65" transform="rotate(-25 15.2 8.4)"/>
+    </symbol>
+
+    <symbol id="icon-instagram" viewBox="0 0 24 24">
+      <g class="doodle--line">
+        <rect x="2.8" y="2.8" width="18.4" height="18.4" rx="6"/>
+        <circle cx="12" cy="12" r="4.6"/>
+        <circle cx="17.4" cy="6.7" r="0.9" fill="currentColor" stroke="none"/>
+      </g>
+    </symbol>
+
+    <symbol id="icon-facebook" viewBox="0 0 24 24">
+      <path class="doodle--line" d="M15.8,3 L13.2,3 C11,3 9.6,4.5 9.6,6.9 L9.6,9.6 L7,9.6 L7,13 L9.6,13 L9.6,21.3 L13.2,21.3 L13.2,13 L15.7,13 L16.4,9.6 L13.2,9.6 L13.2,7.2 C13.2,6.4 13.6,5.8 14.5,5.8 L16,5.8 Z"/>
+    </symbol>
+
+    <symbol id="icon-mail" viewBox="0 0 24 24">
+      <g class="doodle--line">
+        <rect x="2.6" y="5" width="18.8" height="14" rx="3"/>
+        <path d="M3.4,6.2 L12,13 L20.6,6.2"/>
+      </g>
+    </symbol>
+
+    <symbol id="icon-scoop-single" viewBox="0 0 100 100">
+      <path d="M30,55 L70,55 L64,88 C63,92 61,94 58,94 L42,94 C39,94 37,92 36,88 Z" fill="#FFF4D6" stroke="#5A3825" stroke-width="3.5" stroke-linejoin="round"/>
+      <path d="M22,58 C15,40 26,19 50,16 C74,19 85,40 78,58 C74,68 63,60 50,64 C37,60 26,68 22,58 Z" fill="currentColor" stroke="#5A3825" stroke-width="3.5" stroke-linejoin="round"/>
+      <ellipse cx="34" cy="34" rx="8" ry="4.5" fill="#fff" opacity="0.4" transform="rotate(-25 34 34)"/>
+    </symbol>
+
+    <symbol id="icon-cone-pin" viewBox="0 0 30 44">
+      <path d="M8,20 L22,20 L16,40 C15.6,41 14.4,41 14,40 Z" fill="#FFD447" stroke="#5A3825" stroke-width="2.2" stroke-linejoin="round"/>
+      <circle cx="15" cy="13" r="9" fill="currentColor" stroke="#5A3825" stroke-width="2.2"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="grain" aria-hidden="true">
+  <svg width="100%" height="100%" preserveAspectRatio="none"><rect width="100%" height="100%" filter="url(#grainFilter)"/></svg>
+</div>
+
+<!-- ============================================
+     Navbar
+============================================ -->
+<header class="nav">
+  <div class="container nav__row">
+    <a href="#main" class="logo" aria-label="Doodle Icecream, home">
+      <img src="Red and White Bold Typography New York Logo.png" alt="Doodle Icecream Logo" style="width:42px; height:42px; object-fit:cover; border-radius:50%; border: 2px solid var(--ink); flex-shrink: 0;">
+      <span class="logo__word squiggle-underline">Doodle
+        <svg viewBox="0 0 200 20" preserveAspectRatio="none" aria-hidden="true"><use href="#icon-underline-squiggle"/></svg>
+      </span>
+    </a>
+
+    <nav class="nav__links" aria-label="Primary">
+      <a href="#hero">Home</a>
+      <a href="#flavours">Flavours</a>
+      <a href="#story">Our Story</a>
+      <a href="#contact">Contact</a>
+    </nav>
+
+    <div class="nav__actions">
+      <a href="#contact" class="btn btn--pink nav__order-btn">Order Now
+        <svg viewBox="0 0 24 24" aria-hidden="true" style="width:1.1em;height:1.1em"><use href="#icon-heart"/></svg>
+      </a>
+      <button class="hamburger" id="hamburgerBtn" aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu__top">
+    <a href="#main" class="logo">
+      <img src="Red and White Bold Typography New York Logo.png" alt="Doodle Icecream Logo" style="width:42px; height:42px; object-fit:cover; border-radius:50%; border: 2px solid var(--ink); flex-shrink: 0;">
+      <span>Doodle</span>
+    </a>
+    <button class="hamburger" id="closeMenuBtn" aria-label="Close menu">
+      <span style="transform:translateY(9px) rotate(45deg)"></span>
+      <span style="opacity:0"></span>
+      <span style="transform:translateY(-9px) rotate(-45deg)"></span>
+    </button>
+  </div>
+  <nav class="mobile-menu__links" aria-label="Mobile primary">
+    <a href="#hero" class="mobile-link"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-star"/></svg>Home</a>
+    <a href="#flavours" class="mobile-link"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-star"/></svg>Flavours</a>
+    <a href="#story" class="mobile-link"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-star"/></svg>Our Story</a>
+    <a href="#contact" class="mobile-link"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-star"/></svg>Contact</a>
+  </nav>
+  <a href="#contact" class="btn btn--pink mobile-menu__cta">Order Now 🍦</a>
+</div>
+
+<main id="main">
+
+<!-- ============================================
+     Hero
+============================================ -->
+<section class="hero" id="hero">
+  <div class="container hero__grid">
+
+    <div class="hero__copy">
+      <span class="eyebrow">
+        <svg viewBox="0 0 24 24" style="width:1.1em;height:1.1em" aria-hidden="true"><use href="#icon-swirl"/></svg>
+        A little doodle of happiness
+      </span>
+      <h1 class="headline hero__title reveal">
+        Happiness,
+        <span class="squiggle-underline">One Scoop
+          <svg viewBox="0 0 200 20" preserveAspectRatio="none" aria-hidden="true"><use href="#icon-underline-squiggle"/></svg>
+        </span>
+        at a Time.
+      </h1>
+      <p class="lede hero__lede reveal reveal-delay-1">Welcome to Doodle Icecream — colorful scoops, crazy flavors, and a whole lot of fun.</p>
+      <div class="hero__ctas reveal reveal-delay-2">
+        <a href="#flavours" class="btn btn--pink">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-star"/></svg>
+          Explore Flavours
+        </a>
+        <a href="#contact" class="btn" id="getScoopBtn">
+          Get Your Scoop
+          <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-heart"/></svg>
+        </a>
+      </div>
+      <div class="hero__stats reveal reveal-delay-3">
+        <div class="hero__stat"><b>12+</b><span>doodle flavours</span></div>
+        <div class="hero__stat"><b>100%</b><span>hand&#8209;drawn happiness</span></div>
+        <div class="hero__stat"><b>Zero</b><span>boring bites</span></div>
+      </div>
+    </div>
+
+    <div class="hero__art">
+      <canvas class="hero__art-canvas" id="doodleCanvas" aria-hidden="true"></canvas>
+
+      <svg class="hero__blob-bg wobbly" viewBox="0 0 200 200" aria-hidden="true" style="top:-8%;right:-14%;width:62%;opacity:0.55;color:var(--mint)">
+        <path fill="currentColor" d="M100,20 C140,18 178,45 180,88 C182,130 155,168 112,178 C68,188 24,162 18,118 C12,72 42,30 88,20 C92,19 96,20 100,20 Z"/>
+      </svg>
+      <svg class="hero__blob-bg wobbly" viewBox="0 0 200 200" aria-hidden="true" style="bottom:-10%;left:-16%;width:58%;opacity:0.6;color:var(--pink-soft)">
+        <path fill="currentColor" d="M96,24 C132,14 172,36 182,74 C192,114 172,156 132,174 C92,192 44,180 24,142 C4,104 16,60 52,36 C64,28 82,27 96,24 Z"/>
+      </svg>
+
+      <svg class="hero__float hero__float--a" aria-hidden="true" style="top:4%;left:2%;width:11%;color:var(--pink-2);--r:-8deg"><use href="#icon-star"/></svg>
+      <svg class="hero__float hero__float--b" aria-hidden="true" style="top:10%;right:4%;width:9%;color:var(--purple);--r:6deg"><use href="#icon-heart"/></svg>
+      <svg class="hero__float hero__float--a" aria-hidden="true" style="top:38%;left:-4%;width:10%;color:var(--sky-2);--r:0deg"><use href="#icon-swirl"/></svg>
+      <svg class="hero__float hero__float--spin" aria-hidden="true" style="top:2%;left:38%;width:7%;color:var(--yellow-2)"><use href="#icon-star"/></svg>
+      <svg class="hero__float hero__float--b" aria-hidden="true" style="bottom:20%;right:-2%;width:12%;color:var(--mint-2);--r:-4deg"><use href="#icon-sprinkles"/></svg>
+      <svg class="hero__float hero__float--a" aria-hidden="true" style="bottom:6%;left:6%;width:10%;color:var(--brown);--r:5deg"><use href="#icon-smiley"/></svg>
+      <svg class="hero__float hero__float--b" aria-hidden="true" style="bottom:-2%;right:22%;width:9%;color:var(--pink-2);--r:-6deg"><use href="#icon-cherry"/></svg>
+      <svg class="hero__float hero__float--a" aria-hidden="true" style="top:46%;right:-6%;width:8%;color:var(--purple);--r:10deg"><use href="#icon-wave"/></svg>
+
+      <div class="hero__cone-wrap">
+        <svg viewBox="0 0 300 380" aria-hidden="true">
+          <path d="M95,192 Q88,188 100,186 L200,186 Q212,188 205,192 L155,355 Q150,364 145,355 Z" fill="var(--yellow)" stroke="var(--ink)" stroke-width="4.5" stroke-linejoin="round"/>
+          <g stroke="var(--brown-soft)" stroke-width="2.2" opacity="0.55" stroke-linecap="round" fill="none">
+            <path d="M100,205 Q150,214 200,205"/>
+            <path d="M107,234 Q150,242 193,234"/>
+            <path d="M114,263 Q150,270 186,263"/>
+            <path d="M122,292 Q150,298 178,292"/>
+            <path d="M130,320 Q150,325 170,320"/>
+            <path d="M112,200 L145,350"/>
+            <path d="M188,200 L155,350"/>
+          </g>
+
+          <path d="M110,207 C107,216 105,224 110,228 C115,232 120,226 118,219 C117,214 113,210 110,207 Z" fill="var(--mint)" stroke="var(--ink)" stroke-width="3"/>
+          <path d="M83,206 C77,189 82,166 101,154 C113,146 130,142 150,142 C170,142 187,146 199,154 C218,166 223,189 217,206 C213,215 204,210 195,213 C181,217 167,210 150,210 C133,210 119,217 105,213 C96,210 87,215 83,206 Z" fill="var(--mint)" stroke="var(--ink)" stroke-width="4.5" stroke-linejoin="round"/>
+          <ellipse cx="112" cy="168" rx="16" ry="9" fill="#fff" opacity="0.4" transform="rotate(-20 112 168)"/>
+
+          <path d="M130,153 C127,160 125,167 130,171 C135,175 139,169 137,163 C136,159 133,155 130,153 Z" fill="var(--pink)" stroke="var(--ink)" stroke-width="2.6"/>
+          <path d="M95,152 C90,137 95,116 113,106 C123,100 137,96 150,96 C163,96 177,100 187,106 C205,116 210,137 205,152 C201,160 193,155 185,158 C173,163 161,155 150,155 C139,155 127,163 115,158 C107,155 99,160 95,152 Z" fill="var(--pink)" stroke="var(--ink)" stroke-width="4.5" stroke-linejoin="round"/>
+          <ellipse cx="118" cy="120" rx="15" ry="8" fill="#fff" opacity="0.35" transform="rotate(-20 118 120)"/>
+
+          <g stroke="var(--ink)" stroke-width="2.4" stroke-linecap="round" opacity="0.65">
+            <path d="M126,80 L131,87"/>
+            <path d="M141,64 L144,72"/>
+            <path d="M161,66 L165,73"/>
+            <path d="M173,85 L178,91"/>
+            <path d="M117,96 L121,103"/>
+          </g>
+          <path d="M108,101 C103,88 108,70 124,62 C133,57 142,58 148,50 C152,45 160,46 160,53 C160,60 152,60 152,66 C165,68 176,80 174,92 C178,94 195,92 193,101 C190,108 182,104 174,107 C165,111 155,105 150,105 C143,105 132,111 123,107 C114,104 111,108 108,101 Z" fill="var(--sky)" stroke="var(--ink)" stroke-width="4.5" stroke-linejoin="round"/>
+          <ellipse cx="128" cy="78" rx="11" ry="6" fill="#fff" opacity="0.4" transform="rotate(-25 128 78)"/>
+
+          <path d="M150,49 C151,42 156,33 163,28" fill="none" stroke="var(--ink)" stroke-width="3.4" stroke-linecap="round"/>
+          <circle cx="165" cy="25" r="9" fill="var(--pink-2)" stroke="var(--ink)" stroke-width="3.4"/>
+        </svg>
+        <div class="hero__cone-shadow"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     Flavours
+============================================ -->
+<section class="flavours" id="flavours">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">
+        <svg viewBox="0 0 24 24" style="width:1.1em;height:1.1em" aria-hidden="true"><use href="#icon-sprinkles"/></svg>
+        five ways to smile
+      </span>
+      <h2 class="section-title">Meet Your New Favorite Flavour.</h2>
+      <p class="lede">Every scoop is doodled up with real fruit, real cocoa, and a little bit of chaos.</p>
+    </div>
+
+    <div class="flavours__grid">
+      <article class="flavour-card reveal">
+        <span class="tag-sticker flavour-card__sticker" style="top:-16px;right:26px">TRY ME!</span>
+        <svg class="flavour-card__icon" aria-hidden="true" style="color:var(--pink-2)"><use href="#icon-scoop-single"/></svg>
+        <h3 class="flavour-card__name">🍓 Strawberry Swirl</h3>
+        <p class="flavour-card__desc">Sweet, creamy, berry-packed happiness.</p>
+        <svg class="flavour-card__doodle" aria-hidden="true" style="top:22px;right:24px;width:38px;color:var(--pink-2)"><use href="#icon-heart"/></svg>
+        <svg class="flavour-card__doodle" aria-hidden="true" style="bottom:26px;right:40px;width:26px;color:var(--brown)"><use href="#icon-swirl"/></svg>
+      </article>
+
+      <article class="flavour-card reveal reveal-delay-1">
+        <span class="tag-sticker flavour-card__sticker" style="top:-16px;right:26px;background:var(--yellow)">YUM!</span>
+        <svg class="flavour-card__icon" aria-hidden="true" style="color:var(--yellow)"><use href="#icon-scoop-single"/></svg>
+        <h3 class="flavour-card__name">🍫 Choco Doodle</h3>
+        <p class="flavour-card__desc">Rich chocolate with a little extra chaos.</p>
+        <svg class="flavour-card__doodle" aria-hidden="true" style="top:20px;right:22px;width:32px;color:var(--yellow)"><use href="#icon-swirl"/></svg>
+      </article>
+
+      <article class="flavour-card reveal reveal-delay-2">
+        <span class="tag-sticker flavour-card__sticker" style="top:-16px;right:20px">TRY ME!</span>
+        <svg class="flavour-card__icon" aria-hidden="true" style="color:var(--pink-2)"><use href="#icon-scoop-single"/></svg>
+        <h3 class="flavour-card__name">🥭 Mango Madness</h3>
+        <p class="flavour-card__desc">Bright, tropical, and ridiculously juicy.</p>
+        <svg class="flavour-card__doodle" aria-hidden="true" style="top:18px;right:20px;width:28px;color:var(--purple)"><use href="#icon-star"/></svg>
+      </article>
+
+      <article class="flavour-card reveal reveal-delay-3">
+        <span class="tag-sticker flavour-card__sticker" style="top:-16px;right:20px;background:var(--yellow)">YUM!</span>
+        <svg class="flavour-card__icon" aria-hidden="true" style="color:var(--brown)"><use href="#icon-scoop-single"/></svg>
+        <h3 class="flavour-card__name">🍪 Cookie Monster</h3>
+        <p class="flavour-card__desc">Creamy vanilla loaded with crunchy cookie pieces.</p>
+        <svg class="flavour-card__doodle" aria-hidden="true" style="top:18px;right:20px;width:30px;color:var(--brown)"><use href="#icon-sprinkles"/></svg>
+      </article>
+
+      <article class="flavour-card reveal reveal-delay-4">
+        <span class="tag-sticker flavour-card__sticker" style="top:-16px;right:20px">TRY ME!</span>
+        <svg class="flavour-card__icon" aria-hidden="true" style="color:var(--cream-3)"><use href="#icon-scoop-single"/></svg>
+        <h3 class="flavour-card__name">🍦 Classic Vanilla</h3>
+        <p class="flavour-card__desc">Simple. Creamy. Never boring.</p>
+        <svg class="flavour-card__doodle" aria-hidden="true" style="top:18px;right:20px;width:28px;color:var(--brown)"><use href="#icon-swirl"/></svg>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     Mood picker
+============================================ -->
+<section class="mood" id="mood">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">feeling something?</span>
+      <h2 class="section-title">Pick Your Mood. Get Your Scoop.</h2>
+      <p class="lede">Tap however you're feeling right now — we'll doodle up the scoop to match.</p>
+    </div>
+
+    <div class="mood__grid" role="group" aria-label="Choose your mood">
+      <button type="button" class="mood-btn" data-mood="chill" aria-pressed="false">
+        <span class="mood-btn__emoji" aria-hidden="true">😎</span> Chill
+      </button>
+      <button type="button" class="mood-btn" data-mood="crazy" aria-pressed="false">
+        <span class="mood-btn__emoji" aria-hidden="true">🤪</span> Crazy
+      </button>
+      <button type="button" class="mood-btn" data-mood="sweet" aria-pressed="false">
+        <span class="mood-btn__emoji" aria-hidden="true">💕</span> Sweet
+      </button>
+      <button type="button" class="mood-btn" data-mood="energetic" aria-pressed="false">
+        <span class="mood-btn__emoji" aria-hidden="true">⚡</span> Energetic
+      </button>
+      <button type="button" class="mood-btn" data-mood="happy" aria-pressed="false">
+        <span class="mood-btn__emoji" aria-hidden="true">🌈</span> Happy
+      </button>
+    </div>
+
+    <div class="mood__result" id="moodResult" aria-live="polite">
+      <svg class="mood__result-icon" id="moodResultIcon" aria-hidden="true"><use href="#icon-scoop-single"/></svg>
+      <div>
+        <span class="mood__result-label" id="moodResultLabel">Feeling 😎 Chill?</span>
+        <h3 class="mood__result-name" id="moodResultName">Try Minty Mood!</h3>
+        <p class="mood__result-desc" id="moodResultDesc">Cool mint ice cream swirled with little chocolate flecks.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     Brand story (scrapbook)
+============================================ -->
+<section class="story" id="story">
+  <div class="container story__layout">
+    <div class="story__copy">
+      <span class="eyebrow">
+        <svg viewBox="0 0 24 24" style="width:1.1em;height:1.1em" aria-hidden="true"><use href="#icon-heart"/></svg>
+        our story
+      </span>
+      <h2 class="section-title reveal">Born From a Love of Scoops &amp; Scribbles.</h2>
+      <p class="reveal reveal-delay-1">It started with a shared sketchbook, a secondhand freezer, and way too much sugar. Doodle Icecream began as two friends who couldn't stop drawing in the margins of their recipe notes — so eventually, the margins became the whole brand.</p>
+
+      <div class="story__chapters reveal reveal-delay-2">
+        <div class="story__chapter">
+          <span class="story__chapter-tag">Chapter 1</span>
+          <p>A notebook full of made-up flavors and even-more-made-up cartoon mascots.</p>
+        </div>
+        <div class="story__chapter">
+          <span class="story__chapter-tag">Chapter 2</span>
+          <p>We traded straight lines for wobbly ones, and "flavor of the month" for flavors that make you laugh out loud.</p>
+        </div>
+        <div class="story__chapter">
+          <span class="story__chapter-tag">Chapter 3</span>
+          <p>Today, every cup, cone, and wall in the shop is covered in doodles — because ice cream should always feel a little handmade.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="scrapbook reveal reveal-delay-2">
+      <figure class="polaroid polaroid--1">
+        <svg class="polaroid__art" viewBox="0 0 120 120" aria-hidden="true" style="background:var(--yellow)">
+          <circle cx="60" cy="60" r="34" fill="none" stroke="var(--ink)" stroke-width="4"/>
+          <circle cx="48" cy="52" r="4" fill="var(--ink)"/>
+          <circle cx="72" cy="52" r="4" fill="var(--ink)"/>
+          <path d="M44,68 C50,80 70,80 76,68" fill="none" stroke="var(--ink)" stroke-width="4" stroke-linecap="round"/>
+          <path d="M30,30 L34,36 M90,30 L86,36 M60,14 L60,20" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+        <figcaption>first taste test</figcaption>
+      </figure>
+
+      <figure class="polaroid polaroid--2">
+        <svg class="polaroid__art" viewBox="0 0 120 120" aria-hidden="true" style="background:var(--mint)">
+          <path d="M20,92 C30,42 50,102 60,52 C70,12 80,82 100,32" fill="none" stroke="var(--ink)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="22" cy="26" r="5" fill="none" stroke="var(--ink)" stroke-width="3"/>
+          <path d="M92,92 L100,100 M100,92 L92,100" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+        <figcaption>sketchbook chaos</figcaption>
+      </figure>
+
+      <figure class="polaroid polaroid--3">
+        <svg class="polaroid__art" viewBox="0 0 100 100" aria-hidden="true" style="background:var(--pink-soft)">
+          <use href="#icon-scoop-single" style="color:var(--pink-2)"/>
+        </svg>
+        <figcaption>the first flavor</figcaption>
+      </figure>
+
+      <svg class="scrapbook__arrow" viewBox="0 0 100 60" aria-hidden="true" style="top:2%;left:42%;width:22%;color:var(--brown)">
+        <path d="M4,50 C30,10 60,10 86,20" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+        <path d="M74,10 L88,20 L72,26" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <svg class="scrapbook__arrow" viewBox="0 0 80 100" aria-hidden="true" style="top:46%;right:26%;width:15%;color:var(--purple)">
+        <path d="M60,6 C70,40 40,70 16,86" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+        <path d="M30,72 L14,88 L10,68" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="tag-sticker scrapbook__sticker" style="bottom:6%;left:0;background:var(--pink);color:var(--white);border-color:var(--ink);transform:rotate(-6deg)">made w/ sprinkles</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     Signature product — editorial
+============================================ -->
+<section class="signature" id="signature">
+  <div class="container signature__grid">
+    <div class="signature__copy">
+      <span class="eyebrow signature__eyebrow">our signature scoop</span>
+      <h2 class="signature__title reveal">
+        <span>THE DOODLE</span>
+        <span>SCOOP</span>
+      </h2>
+      <p class="signature__tagline reveal reveal-delay-1">Big flavor. Bigger smiles.</p>
+      <div class="signature__cta reveal reveal-delay-2">
+        <a href="#contact" class="btn btn--pink">
+          Try It
+          <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-arrow-link"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="signature__art reveal reveal-delay-1">
+      <svg viewBox="0 0 300 340" aria-hidden="true">
+        <path d="M85,180 L215,180 L195,296 C193,303 188,307 180,307 L120,307 C112,307 107,303 105,296 Z" fill="var(--cream)" stroke="var(--ink)" stroke-width="5" stroke-linejoin="round"/>
+        <path d="M97,196 L203,196 M92,220 L208,220 M88,244 L212,244" stroke="var(--brown-soft)" stroke-width="2" opacity="0.4"/>
+
+        <path d="M75,192 C68,172 74,146 96,132 C110,123 130,118 150,118 C170,118 190,123 204,132 C226,146 232,172 225,192 C221,201 211,196 201,199 C185,204 165,196 150,196 C135,196 115,204 99,199 C89,196 79,201 75,192 Z" fill="var(--purple)" stroke="var(--ink)" stroke-width="5" stroke-linejoin="round"/>
+        <ellipse cx="104" cy="160" rx="18" ry="10" fill="#fff" opacity="0.3" transform="rotate(-20 104 160)"/>
+
+        <path d="M92,126 C85,109 92,86 111,76 C121,70 136,66 150,66 C164,66 179,70 189,76 C208,86 215,109 208,126 C204,135 193,129 183,133 C171,138 157,131 150,131 C143,131 129,138 117,133 C107,129 96,135 92,126 Z" fill="var(--yellow)" stroke="var(--ink)" stroke-width="5" stroke-linejoin="round"/>
+        <ellipse cx="112" cy="98" rx="14" ry="7" fill="#fff" opacity="0.4" transform="rotate(-20 112 98)"/>
+
+        <path d="M108,94 C119,99 128,87 139,93 C150,99 159,87 170,93 C179,99 188,89 196,95" fill="none" stroke="var(--brown)" stroke-width="4.5" stroke-linecap="round" opacity="0.8"/>
+
+        <g stroke="var(--ink)" stroke-width="2.6" stroke-linecap="round" opacity="0.6">
+          <path d="M126,112 L130,119"/>
+          <path d="M144,105 L147,113"/>
+          <path d="M164,107 L168,114"/>
+          <path d="M178,116 L182,122"/>
+        </g>
+
+        <path d="M150,64 C151,56 156,46 164,40" fill="none" stroke="var(--ink)" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="167" cy="37" r="11" fill="var(--pink-2)" stroke="var(--ink)" stroke-width="4"/>
+        <ellipse cx="163" cy="33" rx="3" ry="2" fill="#fff" opacity="0.5"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     Marquee
+============================================ -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee__track">
+    <div class="marquee__set">
+      <span class="marquee__item">SCOOP IT <svg viewBox="0 0 24 24"><use href="#icon-arrow-link"/></svg></span>
+      <span class="marquee__item">MIX IT <svg viewBox="0 0 24 24"><use href="#icon-arrow-link"/></svg></span>
+      <span class="marquee__item">LOVE IT <svg viewBox="0 0 24 24"><use href="#icon-arrow-link"/></svg></span>
+      <span class="marquee__item">DOODLE IT <svg viewBox="0 0 24 24"><use href="#icon-arrow-link"/></svg></span>
+      <span class="marquee__item">REPEAT IT <svg viewBox="0 0 24 24"><use href="#icon-arrow-link"/></svg></span>
+    </div>
+    <div class="marquee__set">
+      <span class="marquee__item">SCOOP IT <svg viewBox="0 0 24 24"><use href="#icon-arrow-link"/></svg></span>
+      <span class="marquee__item">MIX IT <svg viewBox="0 0 24 24"><use href="#icon-arrow-link"/></svg></span>
+      <span class="marquee__item">LOVE IT <svg viewBox="0 0 24 24"><use href="#icon-arrow-link"/></svg></span>
+      <span class="marquee__item">DOODLE IT <svg viewBox="0 0 24 24"><use href="#icon-arrow-link"/></svg></span>
+      <span class="marquee__item">REPEAT IT <svg viewBox="0 0 24 24"><use href="#icon-arrow-link"/></svg></span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================
+     Social
+============================================ -->
+<section class="social" id="social">
+  <div class="container">
+    <div class="section-head section-head--center reveal">
+      <span class="eyebrow">
+        <svg viewBox="0 0 24 24" style="width:1.1em;height:1.1em" aria-hidden="true"><use href="#icon-heart"/></svg>
+        community scoops
+      </span>
+      <h2 class="section-title">Spotted in the Wild 🍦</h2>
+      <p class="lede">Real doodles, real scoops, real customers making a mess in the best way.</p>
+    </div>
+
+    <div class="social__grid reveal reveal-delay-1">
+      <div class="social-tile" style="color:var(--ink)">
+        <svg class="social-tile__icon" aria-hidden="true"><use href="#icon-cone-mark"/></svg>
+        <svg class="social-tile__heart" aria-hidden="true"><use href="#icon-heart"/></svg>
+      </div>
+      <div class="social-tile" style="color:var(--ink)">
+        <svg class="social-tile__icon" aria-hidden="true"><use href="#icon-star"/></svg>
+        <svg class="social-tile__heart" aria-hidden="true"><use href="#icon-heart"/></svg>
+      </div>
+      <div class="social-tile" style="color:var(--pink-2)">
+        <svg class="social-tile__icon" aria-hidden="true"><use href="#icon-heart"/></svg>
+        <svg class="social-tile__heart" aria-hidden="true"><use href="#icon-heart"/></svg>
+      </div>
+      <div class="social-tile" style="color:var(--ink)">
+        <svg class="social-tile__icon" aria-hidden="true"><use href="#icon-swirl"/></svg>
+        <svg class="social-tile__heart" aria-hidden="true"><use href="#icon-heart"/></svg>
+      </div>
+      <div class="social-tile" style="color:var(--brown)">
+        <svg class="social-tile__icon" aria-hidden="true"><use href="#icon-sprinkles"/></svg>
+        <svg class="social-tile__heart" aria-hidden="true"><use href="#icon-heart"/></svg>
+      </div>
+      <div class="social-tile" style="color:var(--cream)">
+        <svg class="social-tile__icon" aria-hidden="true"><use href="#icon-cherry"/></svg>
+        <svg class="social-tile__heart" aria-hidden="true"><use href="#icon-heart"/></svg>
+      </div>
+      <div class="social-tile" style="color:var(--ink)">
+        <svg class="social-tile__icon" aria-hidden="true"><use href="#icon-smiley"/></svg>
+        <svg class="social-tile__heart" aria-hidden="true"><use href="#icon-heart"/></svg>
+      </div>
+      <div class="social-tile" style="color:var(--pink-2)">
+        <svg class="social-tile__icon" aria-hidden="true"><use href="#icon-wave"/></svg>
+        <svg class="social-tile__heart" aria-hidden="true"><use href="#icon-heart"/></svg>
+      </div>
+    </div>
+
+    <div class="social__footer reveal reveal-delay-2">
+      <p class="lede" style="margin:0">Tag <strong>@doodleicecreams</strong> for a chance to get featured.</p>
+      <a href="https://instagram.com/doodleicecreams" class="btn btn--sm">Follow the Doodle
+        <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-arrow-link"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================================
+     Footer
+============================================ -->
+<footer class="footer" id="contact">
+  <div class="container footer__top">
+    <div class="footer__brand">
+      <a href="#main" class="logo">
+        <img src="Red and White Bold Typography New York Logo.png" alt="Doodle Icecream Logo" style="width:42px; height:42px; object-fit:cover; border-radius:50%; border: 2px solid var(--ink); flex-shrink: 0;">
+        <span>DOODLE ICECREAM</span>
+      </a>
+      <p class="footer__tagline">Stay sweet. Keep doodling.</p>
+      <p style="margin-top:14px;font-weight:600;color:var(--cream-2);line-height:1.6;">
+        <a href="mailto:info@doodleicecream.com" style="text-decoration:underline;text-underline-offset:4px">info@doodleicecream.com</a><br>
+        📞 9520227322<br>
+        📍 Mohalla Ramnagar Noorpur, Bijnor Uttar Pradesh
+      </p>
+      <div class="footer__social">
+        <a href="https://instagram.com/doodleicecreams" aria-label="Doodle Icecream on Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-instagram"/></svg></a>
+        <a href="mailto:info@doodleicecream.com" aria-label="Email Doodle Icecream"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-mail"/></svg></a>
+      </div>
+    </div>
+
+    <div class="footer__col">
+      <h4>Explore</h4>
+      <ul>
+        <li><a href="#hero">Home</a></li>
+        <li><a href="#flavours">Flavours</a></li>
+        <li><a href="#story">Our Story</a></li>
+      </ul>
+    </div>
+
+    <div class="footer__col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="https://instagram.com/doodleicecreams">Instagram</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+
+    <div class="footer__col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="#">Privacy</a></li>
+        <li><a href="#">Terms</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer__bigart" aria-hidden="true">
+    <svg viewBox="0 0 300 220">
+      <svg viewBox="0 0 24 24" x="24" y="42" width="34" height="34" overflow="visible" style="color:var(--yellow)"><use href="#icon-star"/></svg>
+      <svg viewBox="0 0 24 24" x="242" y="30" width="30" height="30" overflow="visible" style="color:var(--pink)"><use href="#icon-heart"/></svg>
+      <svg viewBox="0 0 24 24" x="238" y="130" width="30" height="30" overflow="visible" style="color:var(--mint)"><use href="#icon-swirl"/></svg>
+      <svg viewBox="0 0 24 24" x="34" y="140" width="28" height="28" overflow="visible" style="color:var(--mint)"><use href="#icon-star"/></svg>
+
+      <path d="M130,140 L170,140 L152,205 C151.4,208 148.6,208 148,205 Z" fill="var(--yellow)" stroke="var(--cream)" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M112,145 C105,121 118,96 150,92 C182,96 195,121 188,145 C184,156 172,148 150,148 C128,148 116,156 112,145 Z" fill="var(--cream)" stroke="var(--cream)" stroke-width="4.5" stroke-linejoin="round"/>
+      <ellipse cx="128" cy="112" rx="14" ry="7" fill="var(--sky)" opacity="0.5" transform="rotate(-20 128 112)"/>
+      <path d="M150,90 C151,82 156,72 164,66" fill="none" stroke="var(--cream)" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="167" cy="63" r="10" fill="var(--pink)" stroke="var(--cream)" stroke-width="3.5"/>
+    </svg>
+  </div>
+
+  <div class="container footer__bottom">
+    <span>© 2026 Doodle Icecream. All scoops reserved.</span>
+    <span>Made with 🍦 + a whole lot of doodles.</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- Mobile menu ---------- */
+  var hamburgerBtn = document.getElementById('hamburgerBtn');
+  var closeMenuBtn = document.getElementById('closeMenuBtn');
+  var mobileMenu = document.getElementById('mobileMenu');
+
+  function openMenu(){
+    if(!mobileMenu) return;
+    mobileMenu.classList.add('is-open');
+    hamburgerBtn.setAttribute('aria-expanded','true');
+    document.body.style.overflow = 'hidden';
+    var firstLink = mobileMenu.querySelector('a');
+    if(firstLink) firstLink.focus();
+  }
+  function closeMenu(){
+    if(!mobileMenu) return;
+    mobileMenu.classList.remove('is-open');
+    hamburgerBtn.setAttribute('aria-expanded','false');
+    document.body.style.overflow = '';
+    if(hamburgerBtn) hamburgerBtn.focus();
+  }
+  if(hamburgerBtn){
+    hamburgerBtn.addEventListener('click', function(){
+      var isOpen = mobileMenu.classList.contains('is-open');
+      if(isOpen){ closeMenu(); } else { openMenu(); }
+    });
+  }
+  if(closeMenuBtn){ closeMenuBtn.addEventListener('click', closeMenu); }
+  if(mobileMenu){
+    mobileMenu.querySelectorAll('a').forEach(function(a){
+      a.addEventListener('click', closeMenu);
+    });
+  }
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && mobileMenu && mobileMenu.classList.contains('is-open')){ closeMenu(); }
+  });
+
+  /* ---------- Scroll reveal ---------- */
+  var revealEls = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window && !prefersReducedMotion){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+    revealEls.forEach(function(el){ io.observe(el); });
+  } else {
+    revealEls.forEach(function(el){ el.classList.add('in-view'); });
+  }
+
+  /* ---------- Confetti burst on CTA clicks ---------- */
+  var confettiColors = ['#FF6F91', '#FFD447', '#8FE3CF', '#75CFF0', '#6846A5'];
+
+  function burstConfetti(x, y){
+    if(prefersReducedMotion) return;
+    var count = 14;
+    for(var i = 0; i < count; i++){
+      var piece = document.createElement('span');
+      piece.className = 'confetti-piece';
+      var angle = Math.random() * Math.PI * 2;
+      var dist = 60 + Math.random() * 70;
+      var dx = Math.cos(angle) * dist;
+      var dy = Math.sin(angle) * dist - 30;
+      piece.style.left = x + 'px';
+      piece.style.top = y + 'px';
+      piece.style.background = confettiColors[i % confettiColors.length];
+      piece.style.setProperty('--dx', dx + 'px');
+      piece.style.setProperty('--dy', dy + 'px');
+      piece.style.setProperty('--dr', (Math.random() * 360 - 180) + 'deg');
+      document.body.appendChild(piece);
+      piece.addEventListener('animationend', function(){ this.remove(); });
+    }
+  }
+
+  document.querySelectorAll('.btn, .mood-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      var rect = btn.getBoundingClientRect();
+      var x = e.clientX || (rect.left + rect.width / 2);
+      var y = e.clientY || (rect.top + rect.height / 2);
+      burstConfetti(x, y);
+    });
+  });
+
+  /* ---------- Mood picker ---------- */
+  var moodData = {
+    chill:      { emoji:'😎', label:'Chill',      name:'Minty Mood',       desc:'Cool mint ice cream swirled with little chocolate flecks.', color:'var(--mint-2)' },
+    crazy:      { emoji:'🤪', label:'Crazy',      name:'Choco Doodle',     desc:'Rich chocolate with a little extra chaos.', color:'var(--yellow-2)' },
+    sweet:      { emoji:'💕', label:'Sweet',      name:'Strawberry Swirl', desc:'Sweet, creamy, berry-packed happiness.', color:'var(--pink-2)' },
+    energetic:  { emoji:'⚡', label:'Energetic',  name:'Mango Madness',    desc:'Bright, tropical, and ridiculously juicy.', color:'var(--yellow-2)' },
+    happy:      { emoji:'🌈', label:'Happy',      name:'Cookie Monster',   desc:'Creamy vanilla loaded with crunchy cookie pieces.', color:'var(--sky-2)' }
+  };
+  var moodBtns = document.querySelectorAll('.mood-btn');
+  var moodResult = document.getElementById('moodResult');
+  var moodResultIcon = document.getElementById('moodResultIcon');
+  var moodResultLabel = document.getElementById('moodResultLabel');
+  var moodResultName = document.getElementById('moodResultName');
+  var moodResultDesc = document.getElementById('moodResultDesc');
+
+  moodBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      moodBtns.forEach(function(b){ b.setAttribute('aria-pressed', 'false'); });
+      btn.setAttribute('aria-pressed', 'true');
+      var mood = moodData[btn.getAttribute('data-mood')];
+      if(!mood || !moodResult) return;
+
+      moodResult.classList.remove('is-visible');
+      void moodResult.offsetWidth; /* restart animation */
+      moodResultIcon.style.color = mood.color;
+      moodResultLabel.textContent = 'Feeling ' + mood.emoji + ' ' + mood.label + '?';
+      moodResultName.textContent = 'Try ' + mood.name + '!';
+      moodResultDesc.textContent = mood.desc;
+      moodResult.classList.add('is-visible');
+    });
+  });
+
+  /* ---------- Hero doodle cursor trail (desktop, fine pointer only) ---------- */
+  var canvas = document.getElementById('doodleCanvas');
+  var heroArt = document.querySelector('.hero__art');
+  var canDraw = canvas && heroArt && window.matchMedia('(pointer:fine)').matches && !prefersReducedMotion;
+
+  if(canDraw){
+    var ctx = canvas.getContext('2d');
+    var trailColors = ['#FF6F91', '#FFD447', '#8FE3CF', '#75CFF0', '#6846A5'];
+    var points = [];
+    var currentColor = trailColors[0];
+    var dpr = window.devicePixelRatio || 1;
+
+    function resizeCanvas(){
+      var rect = heroArt.getBoundingClientRect();
+      canvas.width = Math.max(1, rect.width * dpr);
+      canvas.height = Math.max(1, rect.height * dpr);
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    function drawTrail(){
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      var now = Date.now();
+      points = points.filter(function(p){ return now - p.t < 900; });
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      for(var i = 1; i < points.length; i++){
+        var p0 = points[i - 1], p1 = points[i];
+        if(p1.newStroke) continue;
+        var age = (now - p1.t) / 900;
+        ctx.globalAlpha = Math.max(0, 1 - age);
+        ctx.strokeStyle = p1.color;
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.moveTo(p0.x, p0.y);
+        ctx.lineTo(p1.x, p1.y);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(drawTrail);
+    }
+    requestAnimationFrame(drawTrail);
+
+    var lastPoint = null;
+    heroArt.addEventListener('pointermove', function(e){
+      if(e.pointerType && e.pointerType !== 'mouse') return;
+      var rect = heroArt.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+      var isNew = !lastPoint || (Date.now() - lastPoint.t > 200);
+      if(isNew){ currentColor = trailColors[Math.floor(Math.random() * trailColors.length)]; }
+      var point = { x: x, y: y, t: Date.now(), color: currentColor, newStroke: isNew };
+      points.push(point);
+      if(points.length > 240) points.shift();
+      lastPoint = point;
+    });
+    heroArt.addEventListener('pointerleave', function(){ lastPoint = null; });
+  }
+
+})();
+</script>
+</body>
+</html>
